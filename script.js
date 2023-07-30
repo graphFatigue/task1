@@ -74,25 +74,37 @@ const notesData = [
   }
   
   function onEditNoteButtonClick(noteId) {
-    const contentCell = activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`);
+    const note = notesData.find((note) => note.id === noteId);
+    if (!note) return; // Note not found, do nothing
+  
+    const contentCell = note.archived
+      ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`)
+      : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`);
+  
     const contentTextarea = contentCell.querySelector('textarea');
     const editButton = contentCell.querySelector('button.edit');
     const saveButton = contentCell.querySelector('button.save');
     contentTextarea.disabled = false;
-    editButton.classList.add('hide');
-    saveButton.classList.remove('hide');
-  }
+    // editButton.classList.add('hide');
+    // saveButton.classList.remove('hide');
+  }  
   
   function onSaveNoteButtonClick(noteId) {
+    const note = notesData.find((note) => note.id === noteId);
+    if (!note) return; // Note not found, do nothing
+  
     onEditNoteClick(noteId);
-    const contentCell = activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`);
+    const contentCell = note.archived
+      ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`)
+      : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`);
+  
     const contentTextarea = contentCell.querySelector('textarea');
     const editButton = contentCell.querySelector('button.edit');
-    const saveButton = contentCell.querySelector('button.save');
+    const saveButton = contentCell.querySelector('button.save'); // Corrected the selector
     contentTextarea.disabled = true;
     editButton.classList.remove('hide');
     saveButton.classList.add('hide');
-  }
+  }  
   
   function createNoteRow(note) {
     const row = document.createElement('tr');
@@ -138,7 +150,7 @@ const notesData = [
   
     const saveButton = document.createElement('button');
     saveButton.textContent = 'Save';
-    saveButton.classList.add('button', 'save', 'hide');
+    saveButton.classList.add('button', 'save', 'hide'); // Add 'hide' class initially
     saveButton.addEventListener('click', () => onSaveNoteButtonClick(note.id));
     actionsCell.appendChild(saveButton);
   
@@ -263,13 +275,20 @@ const notesData = [
   
   function onEditNoteClick(noteId) {
     const noteIndex = notesData.findIndex((note) => note.id === noteId);
+  
     if (noteIndex !== -1) {
-      const contentCell = activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`);
+      const note = notesData[noteIndex];
+      const contentCell = note.archived
+        ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`)
+        : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`);
+  
       const contentTextarea = contentCell.querySelector('textarea');
-      notesData[noteIndex].content = contentTextarea.value;
+      note.content = contentTextarea.value;
+  
+      renderNotesTable();
       renderSummaryTable();
     }
-  }
+  }  
   
   function initApp() {
     renderNotesTable();
