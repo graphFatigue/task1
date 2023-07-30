@@ -92,34 +92,58 @@ const notesData = [
     const note = notesData.find((note) => note.id === noteId);
     if (!note) return; // Note not found, do nothing
   
+    const nameCell = note.archived
+      ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(1)`)
+      : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(1)`);
+  
     const contentCell = note.archived
       ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`)
       : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`);
   
+    const nameInput = nameCell.querySelector('input');
     const contentTextarea = contentCell.querySelector('textarea');
     const editButton = contentCell.querySelector('button.edit');
     const saveButton = contentCell.querySelector('button.save');
+  
+    nameInput.disabled = false;
     contentTextarea.disabled = false;
+  
     // editButton.classList.add('hide');
     // saveButton.classList.remove('hide');
-  }  
+  }
   
   function onSaveNoteButtonClick(noteId) {
     const note = notesData.find((note) => note.id === noteId);
     if (!note) return; // Note not found, do nothing
   
-    onEditNoteButtonClick(noteId); // Corrected function name
+    const nameCell = note.archived
+      ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(1)`)
+      : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(1)`);
+  
     const contentCell = note.archived
       ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`)
       : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`);
   
+    const nameInput = nameCell.querySelector('input');
+    note.name = nameInput.value;
     const contentTextarea = contentCell.querySelector('textarea');
-    const editButton = contentCell.querySelector('button.edit');
-    const saveButton = contentCell.querySelector('button.save'); // Corrected the selector
-    contentTextarea.disabled = true;
-    editButton.classList.remove('hide');
-    saveButton.classList.add('hide');
-  }  
+    note.content = contentTextarea.value;
+  
+    // Enable editing for name and content
+    nameInput.disabled = false;
+    contentTextarea.disabled = false;
+  
+    const editButton = nameCell.querySelector('button.edit');
+    const saveButton = nameCell.querySelector('button.save');
+  
+      // Show the edit button and hide the save button
+    //   editButton.classList.remove('hide');
+    //   saveButton.classList.add('hide');
+  
+      // Update the notes table and summary table
+      renderNotesTable();
+      renderSummaryTable();
+  }
   
   function createNoteRow(note) {    
     const row = document.createElement('tr');
@@ -307,6 +331,12 @@ const notesData = [
         ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`)
         : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`);
   
+      const nameCell = note.archived
+        ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(1)`)
+        : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(1)`);
+  
+      const nameInput = nameCell.querySelector('input');
+      note.name = nameInput.value;
       const contentTextarea = contentCell.querySelector('textarea');
       note.content = contentTextarea.value;
   
