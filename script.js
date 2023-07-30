@@ -74,19 +74,37 @@ const notesData = [
   function createEditableNoteContent(note) {
     const nameCell = document.createElement('td');
     const contentCell = document.createElement('td');
+    const categoryCell = document.createElement('td');
+  
     const nameInput = document.createElement('input');
     const contentTextarea = document.createElement('textarea');
+    const categorySelect = document.createElement('select');
   
     nameInput.value = note.name;
     nameInput.disabled = true;
     contentTextarea.value = note.content;
-    contentTextarea.disabled = true; // Disable editing by default
+    contentTextarea.disabled = true;
+    
+    // Populate the category dropdown with options
+    categories.forEach((category) => {
+      const option = document.createElement('option');
+      option.value = category;
+      option.textContent = category;
+      categorySelect.appendChild(option);
+    });
+  
+    // Set the selected category for the note
+    categorySelect.value = note.category;
+    categorySelect.disabled = true;
+    categorySelect.classList.add('disabled-select');
   
     nameCell.appendChild(nameInput);
     contentCell.appendChild(contentTextarea);
+    categoryCell.appendChild(categorySelect);
   
-    return [nameCell, contentCell];
-  }  
+    return [nameCell, contentCell, categoryCell];
+  }
+  
   
   function onEditNoteButtonClick(noteId) {
     const note = notesData.find((note) => note.id === noteId);
@@ -100,17 +118,29 @@ const notesData = [
       ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`)
       : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`);
   
+    const categoryCell = note.archived
+      ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(4)`)
+      : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(4)`);
+  
     const nameInput = nameCell.querySelector('input');
     const contentTextarea = contentCell.querySelector('textarea');
-    const editButton = contentCell.querySelector('button.edit');
-    const saveButton = contentCell.querySelector('button.save');
+    const categorySelect = categoryCell.querySelector('select');
+
+    const editButton = note.archived
+    ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.edit`)
+    : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.edit`);
+
+  const saveButton = note.archived
+    ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.save`)
+    : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.save`);
   
     nameInput.disabled = false;
     contentTextarea.disabled = false;
+    categorySelect.disabled = false;
   
-    // editButton.classList.add('hide');
-    // saveButton.classList.remove('hide');
-  }
+    editButton.classList.add('hide');
+    saveButton.classList.remove('hide');
+  }  
   
   function onSaveNoteButtonClick(noteId) {
     const note = notesData.find((note) => note.id === noteId);
@@ -124,33 +154,46 @@ const notesData = [
       ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`)
       : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`);
   
+    const categoryCell = note.archived
+      ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(4)`)
+      : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(4)`);
+  
     const nameInput = nameCell.querySelector('input');
     note.name = nameInput.value;
+  
     const contentTextarea = contentCell.querySelector('textarea');
     note.content = contentTextarea.value;
   
-    // Enable editing for name and content
+    const categorySelect = categoryCell.querySelector('select');
+    note.category = categorySelect.value;
+  
+    // Enable editing for name, content, and category
     nameInput.disabled = false;
     contentTextarea.disabled = false;
+    categorySelect.disabled = false;
   
-    const editButton = nameCell.querySelector('button.edit');
-    const saveButton = nameCell.querySelector('button.save');
+    const editButton = note.archived
+    ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.edit`)
+    : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.edit`);
+
+  const saveButton = note.archived
+    ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.save`)
+    : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.save`);
   
-      // Show the edit button and hide the save button
-    //   editButton.classList.remove('hide');
-    //   saveButton.classList.add('hide');
+    // Show the edit button and hide the save button
+    editButton.classList.remove('hide');
+    saveButton.classList.add('hide');
   
-      // Update the notes table and summary table
-      renderNotesTable();
-      renderSummaryTable();
-  }
+    // Update the notes table and summary table
+    renderNotesTable();
+    renderSummaryTable();
+  }  
   
   function createNoteRow(note) {    
     const row = document.createElement('tr');
     row.setAttribute('data-note-id', note.id);
 
-    const [nameCell, contentCell] = createEditableNoteContent(note);
-    //row.appendChild(nameCell); // Add the name cell to the row
+    const [nameCell, contentCell, categoryCell] = createEditableNoteContent(note);
   
     const createdAtCell = document.createElement('td');
     createdAtCell.textContent = new Date(note.createdAt).toLocaleString();
@@ -161,11 +204,7 @@ const notesData = [
   
     row.appendChild(contentCell);
   
-    const categoryCell = document.createElement('td');
-    categoryCell.textContent = note.category;
     row.appendChild(categoryCell);
-
-    //row.appendChild(nameCell);
   
     const dateCell = document.createElement('td');
     dateCell.textContent = formatDateList(note.content);
@@ -321,29 +360,6 @@ const notesData = [
     document.getElementById('note-content').value = '';
     document.getElementById('note-category').value = 'Task';
   }
-  
-  function onEditNoteClick(noteId) {
-    const noteIndex = notesData.findIndex((note) => note.id === noteId);
-  
-    if (noteIndex !== -1) {
-      const note = notesData[noteIndex];
-      const contentCell = note.archived
-        ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`)
-        : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`);
-  
-      const nameCell = note.archived
-        ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(1)`)
-        : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(1)`);
-  
-      const nameInput = nameCell.querySelector('input');
-      note.name = nameInput.value;
-      const contentTextarea = contentCell.querySelector('textarea');
-      note.content = contentTextarea.value;
-  
-      renderNotesTable();
-      renderSummaryTable();
-    }
-  }  
   
   function initApp() {
     renderNotesTable();
