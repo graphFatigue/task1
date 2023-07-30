@@ -1,5 +1,3 @@
-// app.js
-
 // Sample data for pre-populating the notes
 const notesData = [
     {
@@ -66,15 +64,45 @@ const notesData = [
     return dates.join(', ');
   }
   
-  function createNoteRow(note, onDeleteClick, onArchiveClick, onUnarchiveClick) {
+  function createEditableNoteContent(note) {
+    const contentCell = document.createElement('td');
+    const contentTextarea = document.createElement('textarea');
+    contentTextarea.value = note.content;
+    contentTextarea.disabled = true; // Disable editing by default
+    contentCell.appendChild(contentTextarea);
+    return contentCell;
+  }
+  
+  function onEditNoteButtonClick(noteId) {
+    const contentCell = activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`);
+    const contentTextarea = contentCell.querySelector('textarea');
+    const editButton = contentCell.querySelector('button.edit');
+    const saveButton = contentCell.querySelector('button.save');
+    contentTextarea.disabled = false;
+    editButton.classList.add('hide');
+    saveButton.classList.remove('hide');
+  }
+  
+  function onSaveNoteButtonClick(noteId) {
+    onEditNoteClick(noteId);
+    const contentCell = activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`);
+    const contentTextarea = contentCell.querySelector('textarea');
+    const editButton = contentCell.querySelector('button.edit');
+    const saveButton = contentCell.querySelector('button.save');
+    contentTextarea.disabled = true;
+    editButton.classList.remove('hide');
+    saveButton.classList.add('hide');
+  }
+  
+  function createNoteRow(note) {
     const row = document.createElement('tr');
+    row.setAttribute('data-note-id', note.id);
   
     const createdAtCell = document.createElement('td');
     createdAtCell.textContent = new Date(note.createdAt).toLocaleString();
     row.appendChild(createdAtCell);
   
-    const contentCell = document.createElement('td');
-    contentCell.textContent = note.content;
+    const contentCell = createEditableNoteContent(note);
     row.appendChild(contentCell);
   
     const categoryCell = document.createElement('td');
@@ -92,20 +120,32 @@ const notesData = [
       const archiveButton = document.createElement('button');
       archiveButton.textContent = 'Archive';
       archiveButton.classList.add('button');
-      archiveButton.addEventListener('click', () => onArchiveClick(note.id));
+      archiveButton.addEventListener('click', () => onArchiveNoteClick(note.id));
       actionsCell.appendChild(archiveButton);
     } else {
       const unarchiveButton = document.createElement('button');
       unarchiveButton.textContent = 'Unarchive';
       unarchiveButton.classList.add('button');
-      unarchiveButton.addEventListener('click', () => onUnarchiveClick(note.id));
+      unarchiveButton.addEventListener('click', () => onUnarchiveNoteClick(note.id));
       actionsCell.appendChild(unarchiveButton);
     }
+  
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Edit';
+    editButton.classList.add('button', 'edit');
+    editButton.addEventListener('click', () => onEditNoteButtonClick(note.id));
+    actionsCell.appendChild(editButton);
+  
+    const saveButton = document.createElement('button');
+    saveButton.textContent = 'Save';
+    saveButton.classList.add('button', 'save', 'hide');
+    saveButton.addEventListener('click', () => onSaveNoteButtonClick(note.id));
+    actionsCell.appendChild(saveButton);
   
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.classList.add('button');
-    deleteButton.addEventListener('click', () => onDeleteClick(note.id));
+    deleteButton.addEventListener('click', () => onDeleteNoteClick(note.id));
     actionsCell.appendChild(deleteButton);
   
     row.appendChild(actionsCell);
@@ -118,13 +158,7 @@ const notesData = [
     archivedNotesContainer.innerHTML = '';
   
     notesData.forEach((note) => {
-      const row = createNoteRow(
-        note,
-        onDeleteNote,
-        onArchiveNote,
-        onUnarchiveNote
-      );
-  
+      const row = createNoteRow(note);
       if (!note.archived) {
         activeNotesContainer.appendChild(row);
       } else {
@@ -174,7 +208,7 @@ const notesData = [
     });
   }
   
-  function onDeleteNote(noteId) {
+  function onDeleteNoteClick(noteId) {
     notesData.splice(
       notesData.findIndex((note) => note.id === noteId),
       1
@@ -183,7 +217,7 @@ const notesData = [
     renderSummaryTable();
   }
   
-  function onArchiveNote(noteId) {
+  function onArchiveNoteClick(noteId) {
     const noteIndex = notesData.findIndex((note) => note.id === noteId);
     if (noteIndex !== -1) {
       notesData[noteIndex].archived = true;
@@ -192,7 +226,7 @@ const notesData = [
     }
   }
   
-  function onUnarchiveNote(noteId) {
+  function onUnarchiveNoteClick(noteId) {
     const noteIndex = notesData.findIndex((note) => note.id === noteId);
     if (noteIndex !== -1) {
       notesData[noteIndex].archived = false;
@@ -200,8 +234,8 @@ const notesData = [
       renderSummaryTable();
     }
   }
-
-  function onAddNote() {
+  
+  function onAddNoteClick() {
     const content = document.getElementById('note-content').value.trim();
     const category = document.getElementById('note-category').value;
   
@@ -227,11 +261,12 @@ const notesData = [
     document.getElementById('note-category').value = 'Task';
   }
   
-  function onEditNote(noteId, newContent) {
+  function onEditNoteClick(noteId) {
     const noteIndex = notesData.findIndex((note) => note.id === noteId);
     if (noteIndex !== -1) {
-      notesData[noteIndex].content = newContent;
-      renderNotesTable();
+      const contentCell = activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`);
+      const contentTextarea = contentCell.querySelector('textarea');
+      notesData[noteIndex].content = contentTextarea.value;
       renderSummaryTable();
     }
   }
@@ -241,7 +276,7 @@ const notesData = [
     renderSummaryTable();
   
     const addNoteButton = document.getElementById('add-note-button');
-    addNoteButton.addEventListener('click', onAddNote);
+    addNoteButton.addEventListener('click', onAddNoteClick);
   }
   
   initApp();
