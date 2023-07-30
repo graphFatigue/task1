@@ -1,6 +1,7 @@
 // Sample data for pre-populating the notes
 const notesData = [
     {
+      name: "note 1",  
       id: 1,
       createdAt: '2023-07-29T10:00:00',
       content: "I'm gonna have a dentist appointment on 3/5/2023, I moved it from 5/5/2023",
@@ -8,6 +9,7 @@ const notesData = [
       archived: false,
     },
     {
+      name: "note 2", 
       id: 2,
       createdAt: '2023-07-29T11:30:00',
       content: 'Buy groceries for the weekend',
@@ -15,6 +17,7 @@ const notesData = [
       archived: false,
     },
     {
+      name: "note 3",   
       id: 3,
       createdAt: '2023-07-29T14:15:00',
       content: 'Had a great random thought today',
@@ -22,6 +25,7 @@ const notesData = [
       archived: false,
     },
     {
+      name: "note 4",
       id: 4,
       createdAt: '2023-07-29T15:00:00',
       content: 'Work on the new project idea',
@@ -29,6 +33,7 @@ const notesData = [
       archived: false,
     },
     {
+      name: "note 5",
       id: 5,
       createdAt: '2023-07-30T09:45:00',
       content: 'Prepare for the upcoming presentation on 8/5/2023',
@@ -36,6 +41,7 @@ const notesData = [
       archived: false,
     },
     {
+      name: "note 6",
       id: 6,
       createdAt: '2023-07-30T14:30:00',
       content: 'Remember to book the flight for the vacation on 12/8/2023',
@@ -43,6 +49,7 @@ const notesData = [
       archived: false,
     },
     {
+      name: "note 7",
       id: 7,
       createdAt: '2023-07-31T08:00:00',
       content: 'An idea came up in the meeting, need to discuss with the team',
@@ -65,21 +72,29 @@ const notesData = [
   }
   
   function createEditableNoteContent(note) {
+    const nameCell = document.createElement('td');
     const contentCell = document.createElement('td');
+    const nameInput = document.createElement('input');
     const contentTextarea = document.createElement('textarea');
+  
+    nameInput.value = note.name;
+    nameInput.disabled = true;
     contentTextarea.value = note.content;
     contentTextarea.disabled = true; // Disable editing by default
+  
+    nameCell.appendChild(nameInput);
     contentCell.appendChild(contentTextarea);
-    return contentCell;
-  }
+  
+    return [nameCell, contentCell];
+  }  
   
   function onEditNoteButtonClick(noteId) {
     const note = notesData.find((note) => note.id === noteId);
     if (!note) return; // Note not found, do nothing
   
     const contentCell = note.archived
-      ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`)
-      : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`);
+      ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`)
+      : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`);
   
     const contentTextarea = contentCell.querySelector('textarea');
     const editButton = contentCell.querySelector('button.edit');
@@ -93,10 +108,10 @@ const notesData = [
     const note = notesData.find((note) => note.id === noteId);
     if (!note) return; // Note not found, do nothing
   
-    onEditNoteClick(noteId);
+    onEditNoteButtonClick(noteId); // Corrected function name
     const contentCell = note.archived
-      ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`)
-      : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`);
+      ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`)
+      : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`);
   
     const contentTextarea = contentCell.querySelector('textarea');
     const editButton = contentCell.querySelector('button.edit');
@@ -106,20 +121,27 @@ const notesData = [
     saveButton.classList.add('hide');
   }  
   
-  function createNoteRow(note) {
+  function createNoteRow(note) {    
     const row = document.createElement('tr');
     row.setAttribute('data-note-id', note.id);
+
+    const [nameCell, contentCell] = createEditableNoteContent(note);
+    //row.appendChild(nameCell); // Add the name cell to the row
   
     const createdAtCell = document.createElement('td');
     createdAtCell.textContent = new Date(note.createdAt).toLocaleString();
+    
+    row.appendChild(nameCell);
+
     row.appendChild(createdAtCell);
   
-    const contentCell = createEditableNoteContent(note);
     row.appendChild(contentCell);
   
     const categoryCell = document.createElement('td');
     categoryCell.textContent = note.category;
     row.appendChild(categoryCell);
+
+    //row.appendChild(nameCell);
   
     const dateCell = document.createElement('td');
     dateCell.textContent = formatDateList(note.content);
@@ -248,6 +270,7 @@ const notesData = [
   }
   
   function onAddNoteClick() {
+    const name = document.getElementById('note-name').value.trim();
     const content = document.getElementById('note-content').value.trim();
     const category = document.getElementById('note-category').value;
   
@@ -257,6 +280,7 @@ const notesData = [
     }
   
     const newNote = {
+      name: name,
       id: notesData.length + 1,
       createdAt: new Date().toISOString(),
       content: content,
@@ -269,6 +293,7 @@ const notesData = [
     renderSummaryTable();
   
     // Clear the input fields after adding a note
+    document.getElementById('note-name').value = '';
     document.getElementById('note-content').value = '';
     document.getElementById('note-category').value = 'Task';
   }
@@ -279,8 +304,8 @@ const notesData = [
     if (noteIndex !== -1) {
       const note = notesData[noteIndex];
       const contentCell = note.archived
-        ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`)
-        : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(2)`);
+        ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`)
+        : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(3)`);
   
       const contentTextarea = contentCell.querySelector('textarea');
       note.content = contentTextarea.value;
