@@ -59,7 +59,7 @@ const notesData = [
   
   const categories = ['Task', 'Random Thought', 'Idea'];
   
-  const appContainer = document.getElementById('app');
+  //const appContainer = document.getElementById('app');
   const activeNotesContainer = document.getElementById('active-notes');
   const archivedNotesContainer = document.getElementById('archived-notes');
   const summaryTableBody = document.querySelector('#summary-table tbody');
@@ -114,6 +114,7 @@ const notesData = [
   
   
   function onEditNoteButtonClick(noteId) {
+    try {
     const note = notesData.find((note) => note.id === noteId);
     if (!note) return;
   
@@ -147,9 +148,14 @@ const notesData = [
   
     editButton.classList.add('hide');
     saveButton.classList.remove('hide');
+    } catch (error) {
+      alert('An error occurred while editing the note. Please try again.');
+      console.error(error);
+    }
   }  
   
   function onSaveNoteButtonClick(noteId) {
+    try {
     const note = notesData.find((note) => note.id === noteId);
     if (!note) return;
   
@@ -166,10 +172,15 @@ const notesData = [
       : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(4)`);
   
     const nameInput = nameCell.querySelector('input');
-    note.name = nameInput.value;
+    note.name = nameInput.value.trim();
   
     const contentTextarea = contentCell.querySelector('textarea');
-    note.content = contentTextarea.value;
+    note.content = contentTextarea.value.trim();
+
+    if (note.name === '' || note.content === '') {
+      alert('Please fill in both the Name and Content fields before saving the note.');
+      return;
+    }
   
     const categorySelect = categoryCell.querySelector('select');
     note.category = categorySelect.value;
@@ -191,6 +202,10 @@ const notesData = [
   
     renderNotesTable();
     renderSummaryTable();
+  } catch (error) {
+    alert('An error occurred while saving the note. Please try again.');
+    console.error(error);
+    }
   }  
   
   function createNoteRow(note) {    
@@ -229,18 +244,18 @@ const notesData = [
   
     const deleteButton = createImageButton('delete.png');
     deleteButton.classList.add('button');
-    deleteButton.addEventListener('click', () => onDeleteNoteClick(note.id));
+    deleteButton.addEventListener('click', () => onDeleteNoteButtonClick(note.id));
     actionsCell.appendChild(deleteButton);
 
     if (!note.archived) {
       const archiveButton = createImageButton('archive.png');
       archiveButton.classList.add('button');
-      archiveButton.addEventListener('click', () => onArchiveNoteClick(note.id));
+      archiveButton.addEventListener('click', () => onArchiveNoteButtonClick(note.id));
       actionsCell.appendChild(archiveButton);
     } else {
       const unarchiveButton = createImageButton('unarchive.png');
       unarchiveButton.classList.add('button');
-      unarchiveButton.addEventListener('click', () => onUnarchiveNoteClick(note.id));
+      unarchiveButton.addEventListener('click', () => onUnarchiveNoteButtonClick(note.id));
       actionsCell.appendChild(unarchiveButton);
     }
   
@@ -304,40 +319,56 @@ const notesData = [
     });
   }
   
-  function onDeleteNoteClick(noteId) {
+  function onDeleteNoteButtonClick(noteId) {
+    try {
     notesData.splice(
       notesData.findIndex((note) => note.id === noteId),
       1
     );
     renderNotesTable();
     renderSummaryTable();
+    } catch (error) {
+      alert('An error occurred while deleting the note. Please try again.');
+      console.error(error);
+    }
   }
   
-  function onArchiveNoteClick(noteId) {
+  function onArchiveNoteButtonClick(noteId) {
+    try {
     const noteIndex = notesData.findIndex((note) => note.id === noteId);
     if (noteIndex !== -1) {
       notesData[noteIndex].archived = true;
       renderNotesTable();
       renderSummaryTable();
     }
+  } catch (error) {
+    alert('An error occurred while archiving the note. Please try again.');
+    console.error(error);
+  }
   }
   
-  function onUnarchiveNoteClick(noteId) {
+  function onUnarchiveNoteButtonClick(noteId) {
+    try {
     const noteIndex = notesData.findIndex((note) => note.id === noteId);
     if (noteIndex !== -1) {
       notesData[noteIndex].archived = false;
       renderNotesTable();
       renderSummaryTable();
     }
+  } catch (error) {
+    alert('An error occurred while unarchiving the note. Please try again.');
+    console.error(error);
+  }
   }
   
-  function onAddNoteClick() {
+  function onAddNoteButtonClick() {
+    try {
     const name = document.getElementById('note-name').value.trim();
     const content = document.getElementById('note-content').value.trim();
     const category = document.getElementById('note-category').value;
   
-    if (content === '') {
-      alert('Note content cannot be empty.');
+    if (content === '' || name === '') {
+      alert('Please fill in both the Name and Content fields before saving the note.');
       return;
     }
   
@@ -357,6 +388,10 @@ const notesData = [
     document.getElementById('note-name').value = '';
     document.getElementById('note-content').value = '';
     document.getElementById('note-category').value = 'Task';
+  } catch (error) {
+    alert('An error occurred while saving the note. Please try again.');
+    console.error(error);
+    }
   }
   
   function initApp() {
@@ -364,7 +399,7 @@ const notesData = [
     renderSummaryTable();
   
     const addNoteButton = document.getElementById('add-note-button');
-    addNoteButton.addEventListener('click', onAddNoteClick);
+    addNoteButton.addEventListener('click', onAddNoteButtonClick);
   }
   
   initApp();
