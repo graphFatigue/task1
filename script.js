@@ -1,4 +1,3 @@
-// Sample data for pre-populating the notes
 const notesData = [
     {
       name: "note 1",  
@@ -64,6 +63,16 @@ const notesData = [
   const activeNotesContainer = document.getElementById('active-notes');
   const archivedNotesContainer = document.getElementById('archived-notes');
   const summaryTableBody = document.querySelector('#summary-table tbody');
+
+  function createImageButton(src) {
+    const image = document.createElement('img');
+    image.src = src;
+    image.style.width = '20px';
+    image.style.height = '20px';
+    image.style.cursor = 'pointer';
+    image.style.padding = '5px';
+    return image;
+  }
   
   function formatDateList(content) {
     const dateRegex = /\d{1,2}\/\d{1,2}\/\d{4}/g;
@@ -85,7 +94,6 @@ const notesData = [
     contentTextarea.value = note.content;
     contentTextarea.disabled = true;
     
-    // Populate the category dropdown with options
     categories.forEach((category) => {
       const option = document.createElement('option');
       option.value = category;
@@ -93,7 +101,6 @@ const notesData = [
       categorySelect.appendChild(option);
     });
   
-    // Set the selected category for the note
     categorySelect.value = note.category;
     categorySelect.disabled = true;
     categorySelect.classList.add('disabled-select');
@@ -108,7 +115,7 @@ const notesData = [
   
   function onEditNoteButtonClick(noteId) {
     const note = notesData.find((note) => note.id === noteId);
-    if (!note) return; // Note not found, do nothing
+    if (!note) return;
   
     const nameCell = note.archived
       ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(1)`)
@@ -127,12 +134,12 @@ const notesData = [
     const categorySelect = categoryCell.querySelector('select');
 
     const editButton = note.archived
-    ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.edit`)
-    : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.edit`);
+    ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] img.button.edit`)
+    : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] img.button.edit`);
 
   const saveButton = note.archived
-    ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.save`)
-    : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.save`);
+    ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] img.button.save`)
+    : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] img.button.save`);
   
     nameInput.disabled = false;
     contentTextarea.disabled = false;
@@ -144,7 +151,7 @@ const notesData = [
   
   function onSaveNoteButtonClick(noteId) {
     const note = notesData.find((note) => note.id === noteId);
-    if (!note) return; // Note not found, do nothing
+    if (!note) return;
   
     const nameCell = note.archived
       ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] td:nth-child(1)`)
@@ -167,24 +174,21 @@ const notesData = [
     const categorySelect = categoryCell.querySelector('select');
     note.category = categorySelect.value;
   
-    // Enable editing for name, content, and category
     nameInput.disabled = false;
     contentTextarea.disabled = false;
     categorySelect.disabled = false;
   
     const editButton = note.archived
-    ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.edit`)
-    : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.edit`);
+    ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] img.button.edit`)
+    : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] img.button.edit`);
 
   const saveButton = note.archived
-    ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.save`)
-    : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] button.save`);
+    ? archivedNotesContainer.querySelector(`tr[data-note-id="${noteId}"] img.button.save`)
+    : activeNotesContainer.querySelector(`tr[data-note-id="${noteId}"] img.button.save`);
   
-    // Show the edit button and hide the save button
     editButton.classList.remove('hide');
     saveButton.classList.add('hide');
   
-    // Update the notes table and summary table
     renderNotesTable();
     renderSummaryTable();
   }  
@@ -213,37 +217,32 @@ const notesData = [
     const actionsCell = document.createElement('td');
     actionsCell.classList.add('actions');
   
-    if (!note.archived) {
-      const archiveButton = document.createElement('button');
-      archiveButton.textContent = 'Archive';
-      archiveButton.classList.add('button');
-      archiveButton.addEventListener('click', () => onArchiveNoteClick(note.id));
-      actionsCell.appendChild(archiveButton);
-    } else {
-      const unarchiveButton = document.createElement('button');
-      unarchiveButton.textContent = 'Unarchive';
-      unarchiveButton.classList.add('button');
-      unarchiveButton.addEventListener('click', () => onUnarchiveNoteClick(note.id));
-      actionsCell.appendChild(unarchiveButton);
-    }
-  
-    const editButton = document.createElement('button');
-    editButton.textContent = 'Edit';
+    const editButton = createImageButton('edit.png');
     editButton.classList.add('button', 'edit');
     editButton.addEventListener('click', () => onEditNoteButtonClick(note.id));
-    actionsCell.appendChild(editButton);
+    actionsCell.appendChild(editButton);    
   
-    const saveButton = document.createElement('button');
-    saveButton.textContent = 'Save';
+    const saveButton = createImageButton('save.png');
     saveButton.classList.add('button', 'save', 'hide'); // Add 'hide' class initially
     saveButton.addEventListener('click', () => onSaveNoteButtonClick(note.id));
     actionsCell.appendChild(saveButton);
   
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Delete';
+    const deleteButton = createImageButton('delete.png');
     deleteButton.classList.add('button');
     deleteButton.addEventListener('click', () => onDeleteNoteClick(note.id));
     actionsCell.appendChild(deleteButton);
+
+    if (!note.archived) {
+      const archiveButton = createImageButton('archive.png');
+      archiveButton.classList.add('button');
+      archiveButton.addEventListener('click', () => onArchiveNoteClick(note.id));
+      actionsCell.appendChild(archiveButton);
+    } else {
+      const unarchiveButton = createImageButton('unarchive.png');
+      unarchiveButton.classList.add('button');
+      unarchiveButton.addEventListener('click', () => onUnarchiveNoteClick(note.id));
+      actionsCell.appendChild(unarchiveButton);
+    }
   
     row.appendChild(actionsCell);
   
@@ -355,7 +354,6 @@ const notesData = [
     renderNotesTable();
     renderSummaryTable();
   
-    // Clear the input fields after adding a note
     document.getElementById('note-name').value = '';
     document.getElementById('note-content').value = '';
     document.getElementById('note-category').value = 'Task';
