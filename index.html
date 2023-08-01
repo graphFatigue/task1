@@ -1,72 +1,75 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Notes App</title>
+  <title>Notes</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="app">
-      <h1>Notes App</h1>
-      <div class="add-note-form">
-        <h2>Add New Note</h2>
-        <label for="note-content">Note Content:</label>
-        <input type="text" id="note-content">
-        <label for="note-category">Note Category:</label>
-        <select id="note-category">
-          <option value="Task">Task</option>
-          <option value="Random Thought">Random Thought</option>
-          <option value="Idea">Idea</option>
-        </select>
-        <button id="add-note-button" class="button">Add Note</button>
-      </div>
-  
-      <div class="notes-container">
-        <h2>Active</h2>
-        <table id="notes-table">
-          <thead>
-            <tr>
-              <th>Time of Creation</th>
-              <th>Note Content</th>
-              <th>Note Category</th>
-              <th>Dates Mentioned</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="active-notes"></tbody>
-        </table>
-      </div>
-  
-      <div class="notes-container">
-        <h2>Archived</h2>
-        <table id="archived-notes-table">
-          <thead>
-            <tr>
-              <th>Time of Creation</th>
-              <th>Note Content</th>
-              <th>Note Category</th>
-              <th>Dates Mentioned</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="archived-notes"></tbody>
-        </table>
-      </div>
-  
-      <div class="summary-container">
-        <h2>Summary</h2>
-        <table id="summary-table">
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Active Notes Count</th>
-              <th>Archived Notes Count</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+  <div id="app">
+    <h1>Notes App</h1>
+    <div class="add-note-form">
+      <h2>Add New Note</h2>
+      <label for="note-name">Note Name:</label>
+      <input type="text" id="note-name">
+      <label for="note-content">Note Content:</label>
+      <input type="text" id="note-content">
+      <label for="note-category">Note Category:</label>
+      <select id="note-category">
+        <option value="Task">Task</option>
+        <option value="Random Thought">Random Thought</option>
+        <option value="Idea">Idea</option>
+      </select>
+      <button id="add-note-button" class="button">Add Note</button>
     </div>
-    <script src="script.js"></script>
-  </body>
+
+    <div class="notes-container">
+      <h2>Active</h2>
+      <table id="notes-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Created</th>
+            <th>Content</th>
+            <th>Category</th>
+            <th>Dates</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="active-notes"></tbody>
+      </table>
+    </div>
+
+    <div class="notes-container">
+      <h2>Archived</h2>
+      <table id="archived-notes-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Created</th>
+            <th>Content</th>
+            <th>Category</th>
+            <th>Dates</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="archived-notes"></tbody>
+      </table>
+    </div>
+
+    <div class="summary-container">
+      <h2>Summary</h2>
+      <table id="summary-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Active</th>
+            <th>Archived</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
 </html>
